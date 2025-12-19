@@ -1,6 +1,6 @@
 """
 automate_Achmad-Azril.py
-Script untuk melakukan preprocessing data Exam Score Prediction secara otomatis.
+Script untuk preprocessing data Exam Score Prediction secara otomatis.
 
 Author: Achmad Azril
 Date: 2024
@@ -55,6 +55,13 @@ def split_features_target(df: pd.DataFrame, target_column: str = 'exam_score'):
     print(f"[INFO] Features shape: {X.shape}, Target shape: {y.shape}")
     return X, y
 
+def encode_categorical(X: pd.DataFrame) -> pd.DataFrame:
+    categorical_cols = X.select_dtypes(include=['object']).columns.tolist()
+    if categorical_cols:
+        print(f"[INFO] Encoding categorical columns: {categorical_cols}")
+        X = pd.get_dummies(X, columns=categorical_cols, drop_first=True)
+    return X
+
 def split_train_test(X, y, test_size: float = 0.2, random_state: int = 42):
     print(f"[INFO] Splitting data: {(1-test_size)*100:.0f}% train, {test_size*100:.0f}% test")
     X_train, X_test, y_train, y_test = train_test_split(
@@ -108,10 +115,10 @@ def preprocess(input_path: str, output_dir: str, test_size: float = 0.2, random_
     df = load_data(input_path)
     df = drop_unnecessary_columns(df, columns=['Id'])
     df = remove_duplicates(df)
-    # Optional: tentukan kolom numerik untuk outlier capping jika perlu
     numeric_features = df.select_dtypes(include=[np.number]).columns.drop('exam_score').tolist()
     df = cap_outliers_iqr(df, numeric_features)
     X, y = split_features_target(df, target_column='exam_score')
+    X = encode_categorical(X)
     X_train, X_test, y_train, y_test = split_train_test(X, y, test_size, random_state)
     X_train_scaled, X_test_scaled, scaler = scale_features(X_train, X_test)
     train_data, test_data, all_data = save_preprocessed_data(
