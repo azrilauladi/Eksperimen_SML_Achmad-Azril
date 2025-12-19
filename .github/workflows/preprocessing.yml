@@ -1,10 +1,10 @@
-name: Wine Quality Preprocessing Pipeline
+name: Exam Score Preprocessing Pipeline
 
 on:
   push:
     branches: [ main, master ]
     paths:
-      - 'WineQT_raw/**'
+      - 'Exam_Score_Prediction_raw/**'
       - 'preprocessing/**'
   pull_request:
     branches: [ main, master ]
@@ -31,24 +31,24 @@ jobs:
     - name: Run preprocessing
       run: |
         cd preprocessing
-        python automate_Achmad-Azril.py --input ../WineQT_raw/WineQT.csv --output ./
+        python automate_Achmad-Azril.py --input ../Exam_Score_Prediction_raw/Exam_Score_Prediction.csv --output ./
         
     - name: List preprocessed files
       run: |
         echo "=== Preprocessed Files ==="
         ls -la preprocessing/
         echo ""
-        echo "=== Preview WineQT_preprocessing.csv ==="
-        head -5 preprocessing/WineQT_preprocessing.csv
+        echo "=== Preview ExamScore_preprocessing.csv ==="
+        head -5 preprocessing/ExamScore_preprocessing.csv
         
     - name: Upload preprocessed data as artifact
       uses: actions/upload-artifact@v4
       with:
         name: preprocessed-data
         path: |
-          preprocessing/WineQT_train.csv
-          preprocessing/WineQT_test.csv
-          preprocessing/WineQT_preprocessing.csv
+          preprocessing/ExamScore_train.csv
+          preprocessing/ExamScore_test.csv
+          preprocessing/ExamScore_preprocessing.csv
           preprocessing/scaler.pkl
         retention-days: 30
         
@@ -56,7 +56,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add preprocessing/WineQT_train.csv preprocessing/WineQT_test.csv preprocessing/WineQT_preprocessing.csv preprocessing/scaler.pkl || true
+        git add preprocessing/ExamScore_train.csv preprocessing/ExamScore_test.csv preprocessing/ExamScore_preprocessing.csv preprocessing/scaler.pkl || true
         git diff --staged --quiet || git commit -m "Auto-update: Preprocessed data [skip ci]"
         git push || echo "No changes to push"
       env:
